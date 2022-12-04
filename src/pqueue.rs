@@ -29,12 +29,64 @@ impl<T: std::cmp::PartialOrd + Copy + std::fmt::Display> PQueue<T> {
         }
     }
 
-    pub fn get(&self) -> Option<&T> {
+    pub fn popmax(&mut self) -> Option<T> {
+        if let Some(last) = self.vec.pop() {
+            if let Some(&max) = self.vec.get(0) {
+                self.vec[0] = last;
+                self.heapify(1);
+                Some(max)
+            } else {
+                Some(last)
+            }
+        } else {
+            None
+        }
+    }
+
+    pub fn getmax(&self) -> Option<&T> {
         if self.vec.len() == 0 { None } else { Some(&(self.vec[0])) }
     }
 
     pub fn print(&self) {
-        self.print_recursive(1, 0);
+        if self.vec.len() > 0 {
+            self.print_recursive(1, 0);
+        } else {
+            println!("Empty queue!");
+        }
+    }
+
+    fn heapify(&mut self, node_i: usize) {
+        let size: usize = self.vec.len();
+        let left: usize = node_i * 2;
+        let right: usize = left + 1;
+        if node_i < size {
+            if left <= size {
+                let node = self.vec[node_i - 1];
+                if right <= size {
+                    // both left and right exists
+                    if self.vec[node_i - 1] >= self.vec[left - 1] &&
+                            self.vec[node_i - 1] >= self.vec[right - 1] {
+                        return;
+                    } else if self.vec[left - 1] > self.vec[right - 1] {
+                        let max = self.vec[left - 1];
+                        self.vec[node_i - 1] = max;
+                        self.vec[left - 1] = node;
+                        self.heapify(left);
+                    } else {
+                        let max = self.vec[right - 1];
+                        self.vec[node_i - 1] = max;
+                        self.vec[right - 1] = node;
+                        self.heapify(right);
+                    }
+                } else {
+                    if self.vec[left - 1] > self.vec[node_i - 1] {
+                        let max = self.vec[left - 1];
+                        self.vec[node_i - 1] = max;
+                        self.vec[left - 1] = node;
+                    }
+                }
+            }
+        }
     }
 
     fn print_recursive(&self, node_i: usize, level: usize) {
@@ -42,7 +94,7 @@ impl<T: std::cmp::PartialOrd + Copy + std::fmt::Display> PQueue<T> {
             let identation = "    ".repeat(level);
             print!("{}", identation);
         }
-        println!(" - {}", self.vec[node_i - 1]);
+        println!(" - {}, pos: {}", self.vec[node_i - 1], node_i);
         let left: usize = node_i * 2;
         let right: usize = left + 1;
         if left <= self.vec.len() {
