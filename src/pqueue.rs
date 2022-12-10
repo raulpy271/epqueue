@@ -58,22 +58,22 @@ impl<T: std::cmp::PartialOrd + Copy + fmt::Display> PQueue<T> {
                 let node = self.vec[node_i - 1];
                 if right <= size {
                     // both left and right exists
-                    if self.vec[node_i - 1] >= self.vec[left - 1] &&
-                            self.vec[node_i - 1] >= self.vec[right - 1] {
-                        return;
-                    } else if self.vec[left - 1] > self.vec[right - 1] {
-                        let max = self.vec[left - 1];
-                        self.vec[node_i - 1] = max;
-                        self.vec[left - 1] = node;
-                        self.heapify(left);
-                    } else {
-                        let max = self.vec[right - 1];
-                        self.vec[node_i - 1] = max;
-                        self.vec[right - 1] = node;
-                        self.heapify(right);
+                    if self.vec[node_i - 1] < self.vec[left - 1] ||
+                            self.vec[node_i - 1] < self.vec[right - 1] {
+                        if self.vec[right - 1] < self.vec[left - 1] {
+                            let max = self.vec[left - 1];
+                            self.vec[node_i - 1] = max;
+                            self.vec[left - 1] = node;
+                            self.heapify(left);
+                        } else {
+                            let max = self.vec[right - 1];
+                            self.vec[node_i - 1] = max;
+                            self.vec[right - 1] = node;
+                            self.heapify(right);
+                        }
                     }
                 } else {
-                    if self.vec[left - 1] > self.vec[node_i - 1] {
+                    if self.vec[node_i - 1] < self.vec[left - 1] {
                         let max = self.vec[left - 1];
                         self.vec[node_i - 1] = max;
                         self.vec[left - 1] = node;
