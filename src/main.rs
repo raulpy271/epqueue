@@ -1,21 +1,18 @@
 
-mod pqueue;
-
-use crate::pqueue::PQueue;
-use crate::pqueue::Priority;
+use epqueue::{PQueue, Priority};
 
 fn main() {
-    let mut queue: PQueue<i32> = PQueue::new(Priority::Asc);
-    queue.insert(9);
-    queue.insert(1);
-    queue.insert(7);
-    queue.insert(4);
-    queue.insert(1);
-    queue.insert(20);
-    queue.insert(9);
-    queue.insert(10);
-    println!("{:?}", queue);
-    while let Some(max) = queue.pop() {
-        println!("higher priority element: {}", max);
-    }
+    let mut asc_priority_queue = PQueue::new(Priority::Asc);
+
+    asc_priority_queue.insert(9);
+    asc_priority_queue.insert(1);
+    asc_priority_queue.insert(7);
+    asc_priority_queue.insert(4);
+
+    println!("queue representation as heap:\n{:?}", asc_priority_queue);
+
+    match asc_priority_queue.pop() {
+        Some(top) => println!("pop operation: {}", top),
+        None => println!("cannot pop from empty queue")
+    };
 }
