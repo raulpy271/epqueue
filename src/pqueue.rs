@@ -1,9 +1,11 @@
 
+use std::fmt;
+
 pub struct PQueue<T> {
     vec: Vec<T>
 }
 
-impl<T: std::cmp::PartialOrd + Copy + std::fmt::Display> PQueue<T> {
+impl<T: std::cmp::PartialOrd + Copy + fmt::Display> PQueue<T> {
     pub fn new() -> PQueue<T> {
         let queue: PQueue<T> = PQueue {
             vec: Vec::new()
@@ -47,14 +49,6 @@ impl<T: std::cmp::PartialOrd + Copy + std::fmt::Display> PQueue<T> {
         if self.vec.len() == 0 { None } else { Some(&(self.vec[0])) }
     }
 
-    pub fn print(&self) {
-        if self.vec.len() > 0 {
-            self.print_recursive(1, 0);
-        } else {
-            println!("Empty queue!");
-        }
-    }
-
     fn heapify(&mut self, node_i: usize) {
         let size: usize = self.vec.len();
         let left: usize = node_i * 2;
@@ -89,19 +83,41 @@ impl<T: std::cmp::PartialOrd + Copy + std::fmt::Display> PQueue<T> {
         }
     }
 
-    fn print_recursive(&self, node_i: usize, level: usize) {
-        if level > 0 {
-            let identation = "    ".repeat(level);
-            print!("{}", identation);
-        }
-        println!(" - {}, pos: {}", self.vec[node_i - 1], node_i);
+    fn to_string(&self, node_i: usize, level: usize) -> String {
+        let identation = if level > 0 {
+            "    ".repeat(level)
+        } else {
+            String::new()
+        };
+        let header = format!("{} - {}, pos: {}",
+            identation,
+            self.vec[node_i - 1],
+            node_i
+        );
         let left: usize = node_i * 2;
         let right: usize = left + 1;
         if left <= self.vec.len() {
-            self.print_recursive(left, level + 1);
+            let left_string = self.to_string(left, level + 1);
             if right <= self.vec.len() {
-                self.print_recursive(right, level + 1);
+                let right_string = self.to_string(right, level + 1);
+                format!("{}\n{}\n{}", header, left_string, right_string)
+            } else {
+                format!("{}\n{}", header, left_string)
             }
+        } else {
+            header
         }
     }
+}
+
+impl<T: std::cmp::PartialOrd + Copy + fmt::Display> fmt::Debug for PQueue<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        if self.vec.len() > 0 {
+            let repr = self.to_string(1, 0);
+            write!(f, "{}", repr.as_str())
+        } else {
+            write!(f, "empty queue")
+        }
+    }
+
 }

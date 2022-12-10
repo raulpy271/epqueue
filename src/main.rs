@@ -13,7 +13,7 @@ fn main() {
     queue.insert(20);
     queue.insert(9);
     queue.insert(10);
-    queue.print();
+    println!("{:?}", queue);
     while let Some(max) = queue.popmax() {
         println!("max element: {}", max);
     }
