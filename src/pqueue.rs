@@ -1,14 +1,23 @@
 
 use std::fmt;
+use std::cmp;
+
+pub enum Priority {Asc, Desc}
 
 pub struct PQueue<T> {
-    vec: Vec<T>
+    vec: Vec<T>,
+    order: cmp::Ordering
 }
 
-impl<T: std::cmp::PartialOrd + Copy + fmt::Display> PQueue<T> {
-    pub fn new() -> PQueue<T> {
+impl<T: cmp::Ord + Copy + fmt::Display> PQueue<T> {
+    pub fn new(priority: Priority) -> PQueue<T> {
+        let order = match priority {
+            Priority::Asc => cmp::Ordering::Less,
+            Priority::Desc => cmp::Ordering::Greater
+        };
         let queue: PQueue<T> = PQueue {
-            vec: Vec::new()
+            vec: Vec::new(),
+            order
         };
         queue
     }
@@ -20,7 +29,7 @@ impl<T: std::cmp::PartialOrd + Copy + fmt::Display> PQueue<T> {
             let mut temp: T;
             let mut father_i = (node_i / 2) as usize;
             while node_i > 1 {
-                if self.vec[father_i - 1] < self.vec[node_i - 1] {
+                if self.vec[node_i - 1].cmp(&self.vec[father_i - 1]) == self.order {
                     temp = self.vec[father_i - 1];
                     self.vec[father_i - 1] = self.vec[node_i - 1];
                     self.vec[node_i - 1] = temp;
@@ -58,9 +67,9 @@ impl<T: std::cmp::PartialOrd + Copy + fmt::Display> PQueue<T> {
                 let node = self.vec[node_i - 1];
                 if right <= size {
                     // both left and right exists
-                    if self.vec[node_i - 1] < self.vec[left - 1] ||
-                            self.vec[node_i - 1] < self.vec[right - 1] {
-                        if self.vec[right - 1] < self.vec[left - 1] {
+                    if (self.vec[left - 1].cmp(&self.vec[node_i - 1]) == self.order) ||
+                            (self.vec[right - 1].cmp(&self.vec[node_i - 1]) == self.order) {
+                        if self.vec[left - 1].cmp(&self.vec[right - 1]) == self.order {
                             let max = self.vec[left - 1];
                             self.vec[node_i - 1] = max;
                             self.vec[left - 1] = node;
@@ -73,7 +82,7 @@ impl<T: std::cmp::PartialOrd + Copy + fmt::Display> PQueue<T> {
                         }
                     }
                 } else {
-                    if self.vec[node_i - 1] < self.vec[left - 1] {
+                    if self.vec[left - 1].cmp(&self.vec[node_i - 1]) == self.order {
                         let max = self.vec[left - 1];
                         self.vec[node_i - 1] = max;
                         self.vec[left - 1] = node;
@@ -110,7 +119,7 @@ impl<T: std::cmp::PartialOrd + Copy + fmt::Display> PQueue<T> {
     }
 }
 
-impl<T: std::cmp::PartialOrd + Copy + fmt::Display> fmt::Debug for PQueue<T> {
+impl<T: cmp::Ord + Copy + fmt::Display> fmt::Debug for PQueue<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.vec.len() > 0 {
             let repr = self.to_string(1, 0);
