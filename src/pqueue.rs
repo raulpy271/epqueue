@@ -40,12 +40,12 @@ impl<T: cmp::Ord + Copy + fmt::Display> PQueue<T> {
         }
     }
 
-    pub fn popmax(&mut self) -> Option<T> {
+    pub fn pop(&mut self) -> Option<T> {
         if let Some(last) = self.vec.pop() {
-            if let Some(&max) = self.vec.get(0) {
+            if let Some(&top) = self.vec.get(0) {
                 self.vec[0] = last;
                 self.heapify(1);
-                Some(max)
+                Some(top)
             } else {
                 Some(last)
             }
@@ -54,7 +54,7 @@ impl<T: cmp::Ord + Copy + fmt::Display> PQueue<T> {
         }
     }
 
-    pub fn getmax(&self) -> Option<&T> {
+    pub fn top(&self) -> Option<&T> {
         if self.vec.len() == 0 { None } else { Some(&(self.vec[0])) }
     }
 
@@ -70,21 +70,21 @@ impl<T: cmp::Ord + Copy + fmt::Display> PQueue<T> {
                     if (self.vec[left - 1].cmp(&self.vec[node_i - 1]) == self.order) ||
                             (self.vec[right - 1].cmp(&self.vec[node_i - 1]) == self.order) {
                         if self.vec[left - 1].cmp(&self.vec[right - 1]) == self.order {
-                            let max = self.vec[left - 1];
-                            self.vec[node_i - 1] = max;
+                            let higher_priority = self.vec[left - 1];
+                            self.vec[node_i - 1] = higher_priority;
                             self.vec[left - 1] = node;
                             self.heapify(left);
                         } else {
-                            let max = self.vec[right - 1];
-                            self.vec[node_i - 1] = max;
+                            let higher_priority = self.vec[right - 1];
+                            self.vec[node_i - 1] = higher_priority;
                             self.vec[right - 1] = node;
                             self.heapify(right);
                         }
                     }
                 } else {
                     if self.vec[left - 1].cmp(&self.vec[node_i - 1]) == self.order {
-                        let max = self.vec[left - 1];
-                        self.vec[node_i - 1] = max;
+                        let higher_priority = self.vec[left - 1];
+                        self.vec[node_i - 1] = higher_priority;
                         self.vec[left - 1] = node;
                     }
                 }

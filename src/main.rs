@@ -15,7 +15,7 @@ fn main() {
     queue.insert(9);
     queue.insert(10);
     println!("{:?}", queue);
-    while let Some(max) = queue.popmax() {
-        println!("max element: {}", max);
+    while let Some(max) = queue.pop() {
+        println!("higher priority element: {}", max);
     }
 }
