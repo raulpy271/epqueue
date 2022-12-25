@@ -3,9 +3,9 @@
 
 The algorithm was implemented using a [Heap data-structure](https://www.geeksforgeeks.org/binary-heap/).
 
-# Usage
+# Usage example
 
-Usage example:
+### Popping least priority element
 
 ```rust
 use epqueue::{PQueue, Priority};
@@ -40,4 +40,34 @@ queue representation as heap:
          - 9, pos: 4
      - 7, pos: 3
 pop operation: 1
+```
+
+### Iterator Trait
+
+The priority queue implements the `Iterator` trait, so you can iterate over the elements.
+
+```rust
+use epqueue::{PQueue, Priority};
+
+fn main() {
+    let mut asc_priority_queue = PQueue::new(Priority::Asc);
+
+    asc_priority_queue.insert(9);
+    asc_priority_queue.insert(1);
+    asc_priority_queue.insert(7);
+    asc_priority_queue.insert(4);
+
+    for top in asc_priority_queue {
+        print!("{} ", top);
+    }
+
+    println!("\nQueue is empty, consumed all queue elements", );
+}
+```
+
+Output:
+
+```
+1 4 7 9 
+Queue is empty, consumed all queue elements
 ```
