@@ -130,3 +130,11 @@ impl<T: cmp::Ord + Copy + fmt::Display> fmt::Debug for PQueue<T> {
     }
 
 }
+
+impl<T: cmp::Ord + Copy + fmt::Display> Iterator for PQueue<T> {
+    type Item = T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.pop()
+    }
+}
