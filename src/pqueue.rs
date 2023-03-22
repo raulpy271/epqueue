@@ -4,34 +4,39 @@ use std::cmp;
 
 pub enum Priority {Asc, Desc}
 
-pub struct PQueue<T> {
-    vec: Vec<T>,
+#[derive(Debug, Clone)]
+struct Item<'a, K: Copy, V: Clone> {
+    key: K,
+    value: &'a V,
+}
+
+pub struct PQueue<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> {
+    vec: Vec<Item<'a, K, V>>,
     order: cmp::Ordering
 }
 
-impl<T: cmp::Ord + Copy + fmt::Display> PQueue<T> {
-    pub fn new(priority: Priority) -> PQueue<T> {
+impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<'a, K, V> {
+    pub fn new(priority: Priority) -> PQueue<'a, K, V> {
         let order = match priority {
             Priority::Asc => cmp::Ordering::Less,
             Priority::Desc => cmp::Ordering::Greater
         };
-        let queue: PQueue<T> = PQueue {
+        let queue = PQueue {
             vec: Vec::new(),
             order
         };
         queue
     }
 
-    pub fn insert(&mut self, value: T) {
-        self.vec.push(value);
+    pub fn insert(&mut self, key: K, value: &'a V) {
+        self.vec.push(Item {key, value});
         let mut node_i: usize = self.vec.len();
         if node_i > 1 {
-            let mut temp: T;
             let mut father_i = (node_i / 2) as usize;
             while node_i > 1 {
-                if self.vec[node_i - 1].cmp(&self.vec[father_i - 1]) == self.order {
-                    temp = self.vec[father_i - 1];
-                    self.vec[father_i - 1] = self.vec[node_i - 1];
+                if self.vec[node_i - 1].key.cmp(&self.vec[father_i - 1].key) == self.order {
+                    let temp = self.vec[father_i - 1].clone();
+                    self.vec[father_i - 1] = self.vec[node_i - 1].clone();
                     self.vec[node_i - 1] = temp;
                 }
                 node_i = father_i;
@@ -40,22 +45,27 @@ impl<T: cmp::Ord + Copy + fmt::Display> PQueue<T> {
         }
     }
 
-    pub fn pop(&mut self) -> Option<T> {
+    pub fn pop(&mut self) -> Option<&'a V> {
         if let Some(last) = self.vec.pop() {
-            if let Some(&top) = self.vec.get(0) {
+            if self.vec.len() > 0 {
+                let first = self.vec[0].clone();
                 self.vec[0] = last;
                 self.heapify(1);
-                Some(top)
+                Some(first.value)
             } else {
-                Some(last)
+                Some(last.value)
             }
         } else {
             None
         }
     }
 
-    pub fn top(&self) -> Option<&T> {
-        if self.vec.len() == 0 { None } else { Some(&(self.vec[0])) }
+    pub fn top(&self) -> Option<&'a V> {
+        if self.vec.len() == 0 {
+            None
+        } else {
+            Some(self.vec[0].value)
+        }
     }
 
     fn heapify(&mut self, node_i: usize) {
@@ -64,26 +74,26 @@ impl<T: cmp::Ord + Copy + fmt::Display> PQueue<T> {
         let right: usize = left + 1;
         if node_i < size {
             if left <= size {
-                let node = self.vec[node_i - 1];
+                let node = self.vec[node_i - 1].clone();
                 if right <= size {
                     // both left and right exists
-                    if (self.vec[left - 1].cmp(&self.vec[node_i - 1]) == self.order) ||
-                            (self.vec[right - 1].cmp(&self.vec[node_i - 1]) == self.order) {
-                        if self.vec[left - 1].cmp(&self.vec[right - 1]) == self.order {
-                            let higher_priority = self.vec[left - 1];
+                    if (self.vec[left - 1].key.cmp(&self.vec[node_i - 1].key) == self.order) ||
+                            (self.vec[right - 1].key.cmp(&self.vec[node_i - 1].key) == self.order) {
+                        if self.vec[left - 1].key.cmp(&self.vec[right - 1].key) == self.order {
+                            let higher_priority = self.vec[left - 1].clone();
                             self.vec[node_i - 1] = higher_priority;
                             self.vec[left - 1] = node;
                             self.heapify(left);
                         } else {
-                            let higher_priority = self.vec[right - 1];
+                            let higher_priority = self.vec[right - 1].clone();
                             self.vec[node_i - 1] = higher_priority;
                             self.vec[right - 1] = node;
                             self.heapify(right);
                         }
                     }
                 } else {
-                    if self.vec[left - 1].cmp(&self.vec[node_i - 1]) == self.order {
-                        let higher_priority = self.vec[left - 1];
+                    if self.vec[left - 1].key.cmp(&self.vec[node_i - 1].key) == self.order {
+                        let higher_priority = self.vec[left - 1].clone();
                         self.vec[node_i - 1] = higher_priority;
                         self.vec[left - 1] = node;
                     }
@@ -100,7 +110,7 @@ impl<T: cmp::Ord + Copy + fmt::Display> PQueue<T> {
         };
         let header = format!("{} - {}, pos: {}",
             identation,
-            self.vec[node_i - 1],
+            self.vec[node_i - 1].key,
             node_i
         );
         let left: usize = node_i * 2;
@@ -119,7 +129,7 @@ impl<T: cmp::Ord + Copy + fmt::Display> PQueue<T> {
     }
 }
 
-impl<T: cmp::Ord + Copy + fmt::Display> fmt::Debug for PQueue<T> {
+impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> fmt::Debug for PQueue<'a, K, V> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.vec.len() > 0 {
             let repr = self.to_string(1, 0);
@@ -131,8 +141,8 @@ impl<T: cmp::Ord + Copy + fmt::Display> fmt::Debug for PQueue<T> {
 
 }
 
-impl<T: cmp::Ord + Copy + fmt::Display> Iterator for PQueue<T> {
-    type Item = T;
+impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> Iterator for PQueue<'a, K, V> {
+    type Item = &'a V;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.pop()
