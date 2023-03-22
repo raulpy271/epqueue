@@ -2,13 +2,10 @@
 use std::fmt;
 use std::cmp;
 
-pub enum Priority {Asc, Desc}
+use crate::item::{Item};
 
-#[derive(Debug, Clone)]
-struct Item<'a, K: Copy, V: Clone> {
-    key: K,
-    value: &'a V,
-}
+
+pub enum Priority {Asc, Desc}
 
 pub struct PQueue<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> {
     vec: Vec<Item<'a, K, V>>,
@@ -34,7 +31,7 @@ impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<'a, K, V> {
         if node_i > 1 {
             let mut father_i = (node_i / 2) as usize;
             while node_i > 1 {
-                if self.vec[node_i - 1].key.cmp(&self.vec[father_i - 1].key) == self.order {
+                if self.vec[node_i - 1].cmp(&self.vec[father_i - 1]) == self.order {
                     let temp = self.vec[father_i - 1].clone();
                     self.vec[father_i - 1] = self.vec[node_i - 1].clone();
                     self.vec[node_i - 1] = temp;
@@ -77,9 +74,9 @@ impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<'a, K, V> {
                 let node = self.vec[node_i - 1].clone();
                 if right <= size {
                     // both left and right exists
-                    if (self.vec[left - 1].key.cmp(&self.vec[node_i - 1].key) == self.order) ||
-                            (self.vec[right - 1].key.cmp(&self.vec[node_i - 1].key) == self.order) {
-                        if self.vec[left - 1].key.cmp(&self.vec[right - 1].key) == self.order {
+                    if (self.vec[left - 1].cmp(&self.vec[node_i - 1]) == self.order) ||
+                            (self.vec[right - 1].cmp(&self.vec[node_i - 1]) == self.order) {
+                        if self.vec[left - 1].cmp(&self.vec[right - 1]) == self.order {
                             let higher_priority = self.vec[left - 1].clone();
                             self.vec[node_i - 1] = higher_priority;
                             self.vec[left - 1] = node;
@@ -92,7 +89,7 @@ impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<'a, K, V> {
                         }
                     }
                 } else {
-                    if self.vec[left - 1].key.cmp(&self.vec[node_i - 1].key) == self.order {
+                    if self.vec[left - 1].cmp(&self.vec[node_i - 1]) == self.order {
                         let higher_priority = self.vec[left - 1].clone();
                         self.vec[node_i - 1] = higher_priority;
                         self.vec[left - 1] = node;
