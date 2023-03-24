@@ -44,16 +44,18 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
         }
     }
 
-    pub fn pop(&mut self) -> Option<Rc<V>> {
+    pub fn pop(&mut self) -> Option<V> {
         if let Some(last) = self.vec.pop() {
+            let rc_value;
             if self.vec.len() > 0 {
                 let first = self.vec[0].clone();
                 self.vec[0] = last;
                 self.heapify(1);
-                Some(first.value)
+                rc_value = first.value;
             } else {
-                Some(last.value)
+                rc_value = last.value;
             }
+            Rc::try_unwrap(rc_value).ok()
         } else {
             None
         }
@@ -141,9 +143,43 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> fmt::Debug for PQueue<K, V> {
 }
 
 impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> Iterator for PQueue<K, V> {
-    type Item = Rc<V>;
+    type Item = V;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.pop()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn insert_value() {
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
+        queue.insert(0, String::from("Value on key 0"));
+    }
+
+    #[test]
+    fn pop_value() {
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
+        queue.insert(0, String::from("Value on key 0"));
+        assert_eq!(queue.pop(), Some(String::from("Value on key 0")));
+    }
+
+    #[test]
+    fn pop_empty_queue() {
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
+        assert_eq!(queue.pop(), None);
+    }
+
+    #[test]
+    fn top_and_pop_value() {
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
+        queue.insert(0, String::from("Value on key 0"));
+        assert_eq!(queue.top().map(|rc| Rc::strong_count(&rc)), Some(2));
+        assert_eq!(queue.top().map(|rc| (*rc).clone()), Some(String::from("Value on key 0")));
+        queue.pop();
+        assert_eq!(queue.top(), None);
     }
 }
