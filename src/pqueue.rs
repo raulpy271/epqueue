@@ -1,4 +1,5 @@
 
+use std::rc::Rc;
 use std::fmt;
 use std::cmp;
 
@@ -7,13 +8,13 @@ use crate::item::{Item};
 
 pub enum Priority {Asc, Desc}
 
-pub struct PQueue<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> {
-    vec: Vec<Item<'a, K, V>>,
+pub struct PQueue<K: cmp::Ord + Copy + fmt::Display, V: Clone> {
+    vec: Vec<Item<K, V>>,
     order: cmp::Ordering
 }
 
-impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<'a, K, V> {
-    pub fn new(priority: Priority) -> PQueue<'a, K, V> {
+impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
+    pub fn new(priority: Priority) -> PQueue<K, V> {
         let order = match priority {
             Priority::Asc => cmp::Ordering::Less,
             Priority::Desc => cmp::Ordering::Greater
@@ -25,8 +26,9 @@ impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<'a, K, V> {
         queue
     }
 
-    pub fn insert(&mut self, key: K, value: &'a V) {
-        self.vec.push(Item {key, value});
+    pub fn insert(&mut self, key: K, value: V) {
+        let rc_value = Rc::new(value);
+        self.vec.push(Item {key, value: rc_value});
         let mut node_i: usize = self.vec.len();
         if node_i > 1 {
             let mut father_i = (node_i / 2) as usize;
@@ -42,7 +44,7 @@ impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<'a, K, V> {
         }
     }
 
-    pub fn pop(&mut self) -> Option<&'a V> {
+    pub fn pop(&mut self) -> Option<Rc<V>> {
         if let Some(last) = self.vec.pop() {
             if self.vec.len() > 0 {
                 let first = self.vec[0].clone();
@@ -57,11 +59,11 @@ impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<'a, K, V> {
         }
     }
 
-    pub fn top(&self) -> Option<&'a V> {
+    pub fn top(&self) -> Option<Rc<V>> {
         if self.vec.len() == 0 {
             None
         } else {
-            Some(self.vec[0].value)
+            Some(self.vec[0].value.clone())
         }
     }
 
@@ -126,7 +128,7 @@ impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<'a, K, V> {
     }
 }
 
-impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> fmt::Debug for PQueue<'a, K, V> {
+impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> fmt::Debug for PQueue<K, V> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if self.vec.len() > 0 {
             let repr = self.to_string(1, 0);
@@ -138,8 +140,8 @@ impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> fmt::Debug for PQueue<'a, 
 
 }
 
-impl<'a, K: cmp::Ord + Copy + fmt::Display, V: Clone> Iterator for PQueue<'a, K, V> {
-    type Item = &'a V;
+impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> Iterator for PQueue<K, V> {
+    type Item = Rc<V>;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.pop()
