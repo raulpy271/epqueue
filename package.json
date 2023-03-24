@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "pretest": "wasm-pack build --dev --target nodejs --out-dir js_api_test/pkg",
+    "test": "jest",
+    "prepublish": "wasm-pack build --release --target nodejs --out-dir pkg",
+    "publish": "wasm-pack publish -t nodejs pkg",
+    "benchmark": "./benchmark/run_benchmark.sh"
+  },
+  "devDependencies": {
+    "jest": "^29.4.3"
+  }
+}
