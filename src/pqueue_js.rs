@@ -78,13 +78,20 @@ impl PQueueJs {
         self.queue.insert_kv(NumberJs::new(key), value);
     }
 
-    pub fn pop(&mut self) -> Result<Array, String> {
-        let value = self.queue.pop();
+    pub fn pop_kv(&mut self) -> Result<Array, String> {
+        let value = self.queue.pop_kv();
         value
             .map(|pair| match pair.1 {
                 Some(value) => Array::of2(&JsValue::from_f64(pair.0.0), &value),
                 None => Array::of1(&JsValue::from_f64(pair.0.0)),
             })
+            .ok_or(String::from("Cannot pop from empty queue"))
+    }
+
+    pub fn pop_k(&mut self) -> Result<f64, String> {
+        let value = self.queue.pop_k();
+        value
+            .map(|k| k.0)
             .ok_or(String::from("Cannot pop from empty queue"))
     }
 }

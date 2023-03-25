@@ -53,10 +53,10 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
     }
 
     pub fn pop_k(&mut self) -> Option<K> {
-        self.pop().map(|kv| kv.0)
+        self.pop_kv().map(|kv| kv.0)
     }
 
-    pub fn pop(&mut self) -> Option<(K, Option<V>)> {
+    pub fn pop_kv(&mut self) -> Option<(K, Option<V>)> {
         if let Some(last) = self.vec.pop() {
             let key;
             let rc_value;
@@ -167,7 +167,7 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> Iterator for PQueue<K, V> {
     type Item = (K, Option<V>);
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.pop()
+        self.pop_kv()
     }
 }
 
@@ -198,13 +198,13 @@ mod tests {
     fn pop_key_value() {
         let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
         queue.insert_kv(0, String::from("Value on key 0"));
-        assert_eq!(queue.pop(), Some((0, Some(String::from("Value on key 0")))));
+        assert_eq!(queue.pop_kv(), Some((0, Some(String::from("Value on key 0")))));
     }
 
     #[test]
     fn pop_empty_queue() {
         let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
-        assert_eq!(queue.pop(), None);
+        assert_eq!(queue.pop_kv(), None);
     }
 
     #[test]
@@ -213,7 +213,7 @@ mod tests {
         queue.insert_kv(0, String::from("Value on key 0"));
         assert_eq!(queue.top().map(|rc| Rc::strong_count(&rc)), Some(2));
         assert_eq!(queue.top().map(|rc| (*rc).clone()), Some(String::from("Value on key 0")));
-        queue.pop();
+        queue.pop_kv();
         assert_eq!(queue.top(), None);
     }
 }
