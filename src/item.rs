@@ -5,7 +5,7 @@ use std::cmp;
 #[derive(Debug, Clone)]
 pub struct Item<K: Copy + cmp::Ord + cmp::Eq, V: Clone> {
     pub key: K,
-    pub value: Rc<V>,
+    pub value: Option<Rc<V>>,
 }
 
 impl<K: Copy + cmp::Ord + cmp::Eq, V: Clone> cmp::Ord for Item<K, V> {
@@ -38,11 +38,11 @@ mod tests {
         let value = Rc::new(String::from("item!"));
         let item1 = Item {
             key: 2,
-            value: value.clone(),
+            value: Some(value.clone()),
         };
         let item2 = Item {
             key: 3,
-            value: value,
+            value: Some(value),
         };
         assert_eq!(item1.cmp(&item2), cmp::Ordering::Less);
         assert_eq!(item2.cmp(&item1), cmp::Ordering::Greater);
@@ -55,11 +55,11 @@ mod tests {
         let value2 = String::from("item2!");
         let item1 = Item {
             key: 2,
-            value: Rc::new(value1),
+            value: Some(Rc::new(value1)),
         };
         let item2 = Item {
             key: 2,
-            value: Rc::new(value2),
+            value: Some(Rc::new(value2)),
         };
         assert_eq!(item1, item2);
     }
@@ -67,9 +67,9 @@ mod tests {
     #[test]
     fn item_share_data() {
         let value = Rc::new(String::from("item!"));
-        let item1 = Item { key: 2, value };
+        let item1 = Item { key: 2, value: Some(value) };
         let item2 = item1.clone();
         assert_eq!(item1, item2);
-        assert_eq!(item1.value.as_ptr(), item2.value.as_ptr());
+        assert_eq!(item1.value.unwrap().as_ptr(), item2.value.unwrap().as_ptr());
     }
 }

@@ -26,8 +26,16 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
         queue
     }
 
-    pub fn insert(&mut self, key: K, value: V) {
-        let rc_value = Rc::new(value);
+    pub fn insert_k(&mut self, key: K) {
+        self.insert(key, None)
+    }
+
+    pub fn insert_kv(&mut self, key: K, value: V) {
+        self.insert(key, Some(value))
+    }
+
+    fn insert(&mut self, key: K, value: Option<V>) {
+        let rc_value: Option<Rc<V>> = value.map(|rc| Rc::new(rc));
         self.vec.push(Item {key, value: rc_value});
         let mut node_i: usize = self.vec.len();
         if node_i > 1 {
@@ -44,18 +52,31 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
         }
     }
 
-    pub fn pop(&mut self) -> Option<V> {
+    pub fn pop_k(&mut self) -> Option<K> {
+        self.pop().map(|kv| kv.0)
+    }
+
+    pub fn pop(&mut self) -> Option<(K, Option<V>)> {
         if let Some(last) = self.vec.pop() {
+            let key;
             let rc_value;
             if self.vec.len() > 0 {
                 let first = self.vec[0].clone();
                 self.vec[0] = last;
                 self.heapify(1);
+                key = first.key;
                 rc_value = first.value;
             } else {
+                key = last.key;
                 rc_value = last.value;
             }
-            Rc::try_unwrap(rc_value).ok()
+            Some((
+                key,
+                match rc_value {
+                    Some(rc) => Rc::try_unwrap(rc).ok(),
+                    None => None,
+                }
+            ))
         } else {
             None
         }
@@ -65,7 +86,7 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
         if self.vec.len() == 0 {
             None
         } else {
-            Some(self.vec[0].value.clone())
+            self.vec[0].value.clone()
         }
     }
 
@@ -143,7 +164,7 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> fmt::Debug for PQueue<K, V> {
 }
 
 impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> Iterator for PQueue<K, V> {
-    type Item = V;
+    type Item = (K, Option<V>);
 
     fn next(&mut self) -> Option<Self::Item> {
         self.pop()
@@ -155,16 +176,29 @@ mod tests {
     use super::*;
 
     #[test]
-    fn insert_value() {
+    fn insert_key() {
         let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
-        queue.insert(0, String::from("Value on key 0"));
+        queue.insert_k(0);
     }
 
     #[test]
-    fn pop_value() {
+    fn pop_key() {
         let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
-        queue.insert(0, String::from("Value on key 0"));
-        assert_eq!(queue.pop(), Some(String::from("Value on key 0")));
+        queue.insert_k(0);
+        assert_eq!(queue.pop_k(), Some(0));
+    }
+
+    #[test]
+    fn insert_key_value() {
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
+        queue.insert_kv(0, String::from("Value on key 0"));
+    }
+
+    #[test]
+    fn pop_key_value() {
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
+        queue.insert_kv(0, String::from("Value on key 0"));
+        assert_eq!(queue.pop(), Some((0, Some(String::from("Value on key 0")))));
     }
 
     #[test]
@@ -174,9 +208,9 @@ mod tests {
     }
 
     #[test]
-    fn top_and_pop_value() {
+    fn top_and_pop_key_value() {
         let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
-        queue.insert(0, String::from("Value on key 0"));
+        queue.insert_kv(0, String::from("Value on key 0"));
         assert_eq!(queue.top().map(|rc| Rc::strong_count(&rc)), Some(2));
         assert_eq!(queue.top().map(|rc| (*rc).clone()), Some(String::from("Value on key 0")));
         queue.pop();

@@ -8,15 +8,15 @@ fn main() {
     let s3 = String::from("mnp");
     let s4 = String::from("sss");
 
-    asc_priority_queue.insert(9, s4);
-    asc_priority_queue.insert(1, s1);
-    asc_priority_queue.insert(7, s3);
-    asc_priority_queue.insert(4, s2);
+    asc_priority_queue.insert_kv(9, s4);
+    asc_priority_queue.insert_kv(1, s1);
+    asc_priority_queue.insert_kv(7, s3);
+    asc_priority_queue.insert_kv(4, s2);
 
     println!("queue representation as heap:\n{:?}", asc_priority_queue);
 
-    for s in asc_priority_queue {
-        println!("s: {}", s);
+    for (k, v) in asc_priority_queue {
+        println!("k: {}, v: {}", k, v.unwrap());
     }
 
 }
