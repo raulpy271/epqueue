@@ -3,6 +3,7 @@ use std::rc::Rc;
 use std::cmp;
 use std::fmt;
 
+use js_sys::{Array};
 use wasm_bindgen::prelude::*;
 
 use crate::pqueue::{PQueue, Priority};
@@ -69,13 +70,22 @@ impl PQueueJs {
         Ok(queue_js)
     }
 
-    pub fn insert(&mut self, key: f64, value: JsValue) {
-        self.queue.insert(NumberJs::new(key), value)
+    pub fn insert_k(&mut self, key: f64) {
+        self.queue.insert_k(NumberJs::new(key));
     }
 
-    pub fn pop(&mut self) -> Result<JsValue, String> {
+    pub fn insert_kv(&mut self, key: f64, value: JsValue) {
+        self.queue.insert_kv(NumberJs::new(key), value);
+    }
+
+    pub fn pop(&mut self) -> Result<Array, String> {
         let value = self.queue.pop();
-        value.ok_or(String::from("Cannot pop from empty queue"))
+        value
+            .map(|pair| match pair.1 {
+                Some(value) => Array::of2(&JsValue::from_f64(pair.0.0), &value),
+                None => Array::of1(&JsValue::from_f64(pair.0.0)),
+            })
+            .ok_or(String::from("Cannot pop from empty queue"))
     }
 }
 
