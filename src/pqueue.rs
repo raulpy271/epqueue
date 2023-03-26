@@ -40,12 +40,8 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
         let mut node_i: usize = self.vec.len();
         if node_i > 1 {
             let mut father_i = (node_i / 2) as usize;
-            while node_i > 1 {
-                if self.vec[node_i - 1].cmp(&self.vec[father_i - 1]) == self.order {
-                    let temp = self.vec[father_i - 1].clone();
-                    self.vec[father_i - 1] = self.vec[node_i - 1].clone();
-                    self.vec[node_i - 1] = temp;
-                }
+            while (node_i > 1) && (self.vec[node_i - 1].cmp(&self.vec[father_i - 1]) == self.order) {
+                self.vec.swap(father_i - 1, node_i - 1);
                 node_i = father_i;
                 father_i = (node_i / 2) as usize;
             }
@@ -179,6 +175,20 @@ mod tests {
     fn insert_key() {
         let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
         queue.insert_k(0);
+    }
+
+    #[test]
+    fn insert_min_in_correct_order() {
+        let mut queue: PQueue<i32, String> = PQueue::new(Priority::Asc);
+        queue.insert_k(0);
+        queue.insert_k(1);
+        queue.insert_k(-2);
+        queue.insert_k(3);
+        queue.insert_k(-10);
+        queue.insert_k(10);
+        assert_eq!(queue.vec[0].key, -10);
+        assert!(vec![queue.vec[1].key, queue.vec[2].key].contains(&-2));
+        assert!(vec![queue.vec[1].key, queue.vec[2].key].contains(&0));
     }
 
     #[test]
