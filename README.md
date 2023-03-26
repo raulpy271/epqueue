@@ -28,7 +28,7 @@ queue.insert_k(5)
 queue.insert_k(1)
 
 console.log(`Popping the key with higher priority: ${queue.pop_k()}`);
-// output: Popping the key with most priority: 1
+// output: Popping the key with higher priority: 1
 
 // Inserting keys with associated data
 queue.insert_kv(2, "The data associated to key 2");
