@@ -57,6 +57,11 @@ pub struct PQueueJs {
 #[wasm_bindgen( js_class = PQueue )]
 impl PQueueJs {
     #[wasm_bindgen(constructor)]
+    /// Construct a new priority queue.
+    /// 
+    /// If the `order` is "asc" then it's a ascending priority queue.
+    /// If the `order` is "desc" then it's a descending priority queue.
+    /// Otherwise, it throws a exception.
     pub fn new(order: String) -> Result<PQueueJs, String> {
         let queue;
         if order == String::from("asc") {
@@ -70,14 +75,29 @@ impl PQueueJs {
         Ok(queue_js)
     }
 
+    #[wasm_bindgen( js_name = insertK )]
+    /// Insert a key in the priority queue.
+    ///
+    /// The method assumes that there is no data associated with the inserted key.
     pub fn insert_k(&mut self, key: f64) {
         self.queue.insert_k(NumberJs::new(key));
     }
 
+    #[wasm_bindgen( js_name = insertKV )]
+    /// Insert a key in the priority queue. `insertKV` stands for `insert key and value`.
+    ///
+    /// The `value` should be any data associated with the inserted key.
     pub fn insert_kv(&mut self, key: f64, value: JsValue) {
         self.queue.insert_kv(NumberJs::new(key), value);
     }
 
+    #[wasm_bindgen( js_name = popKV )]
+    /// Pop from the queue the pair key/value with higher priority.
+    ///
+    /// Returns a array which the first element is the key.
+
+    /// The returned array have the length 2 if the key has inserted with associated data.
+    /// If the key has inserted without any associated data, it returns a array with a single element.
     pub fn pop_kv(&mut self) -> Result<Array, String> {
         let value = self.queue.pop_kv();
         value
@@ -88,6 +108,8 @@ impl PQueueJs {
             .ok_or(String::from("Cannot pop from empty queue"))
     }
 
+    #[wasm_bindgen( js_name = popK )]
+    /// Pop from the queue the key with higher priority.
     pub fn pop_k(&mut self) -> Result<f64, String> {
         let value = self.queue.pop_k();
         value
