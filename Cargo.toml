@@ -1,5 +1,9 @@
 [package]
 name = "epqueue"
+description = "Efficient priority queue written in Rust and compiled to WebAssembly"
+authors = ["raulpy271 <raulrufino0@gmail.com>"]
+repository = "https://github.com/raulpy271/epqueue"
+license = "MIT"
 version = "0.1.0"
 edition = "2021"
 

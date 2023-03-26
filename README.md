@@ -1,73 +1,42 @@
 
-# An efficient Priority Queue in Rust
+# Efficient Priority Queue compiled to WebAssembly
 
-The algorithm was implemented using a [Heap data-structure](https://www.geeksforgeeks.org/binary-heap/).
+A priority queue library compiled to WebAssembly to be imported in any JavaScript/TypeScript environment with support to Wasm.
 
-# Usage example
+The purpose of the library is to provide a efficient implementation and take advantage of the native speed of WebAssembly language. The algorithm was implemented using a [Heap data-structure](https://www.geeksforgeeks.org/binary-heap/).
 
-### Popping least priority element
-
-```rust
-use epqueue::{PQueue, Priority};
-
-fn main() {
-    let mut asc_priority_queue = PQueue::new(Priority::Asc);
-
-    asc_priority_queue.insert(9);
-    asc_priority_queue.insert(1);
-    asc_priority_queue.insert(7);
-    asc_priority_queue.insert(4);
-
-    println!("queue representation as heap:\n{:?}", asc_priority_queue);
-
-    match asc_priority_queue.pop() {
-        Some(top) => println!("pop operation: {}", top),
-        None => println!("cannot pop from empty queue")
-    };
-}
-```
-
-Running:
+To install and import the library, is simple as any other node.js library:
 
 ```sh
-$ cargo run
-    Finished dev [unoptimized + debuginfo] target(s) in 0.00s
-     Running `target/debug/epqueue`
+# installation
+npm install epqueue
 
-queue representation as heap:
- - 1, pos: 1
-     - 4, pos: 2
-         - 9, pos: 4
-     - 7, pos: 3
-pop operation: 1
+# Importation
+const epqueue = require('epqueue');
 ```
 
-### Iterator Trait
+## Usage example
 
-The priority queue implements the `Iterator` trait, so you can iterate over the elements.
+```js
+const {PQueue} = require('epqueue');
 
-```rust
-use epqueue::{PQueue, Priority};
+// Creating a ascending priority queue
+let queue = new PQueue("asc");
 
-fn main() {
-    let mut asc_priority_queue = PQueue::new(Priority::Asc);
+// Inserting keys without associated data
+queue.insert_k(5)
+queue.insert_k(1)
 
-    asc_priority_queue.insert(9);
-    asc_priority_queue.insert(1);
-    asc_priority_queue.insert(7);
-    asc_priority_queue.insert(4);
+console.log(`Popping the key with higher priority: ${queue.pop_k()}`);
+// output: Popping the key with most priority: 1
 
-    for top in asc_priority_queue {
-        print!("{} ", top);
-    }
+// Inserting keys with associated data
+queue.insert_kv(2, "The data associated to key 2");
 
-    println!("\nQueue is empty, consumed all queue elements", );
-}
+console.log(`Popping the key/data with higher priority: ${queue.pop_kv()}`);
+// output: Popping the key/data with higher priority: 2,The data associated to key 2
 ```
 
-Output:
+## License
 
-```
-1 4 7 9 
-Queue is empty, consumed all queue elements
-```
+Released under the MIT License. See [LICENSE.md](/LICENSE) for details.
