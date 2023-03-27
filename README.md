@@ -43,7 +43,6 @@ The exported methods/objects can be seen below. It follows the typescript `d.ts`
 
 ```ts
 export class PQueue {
-  free(): void;
 /**
 * Construct a new priority queue.
 * 
@@ -53,6 +52,8 @@ export class PQueue {
 * @param {string} order
 */
   constructor(order: string);
+
+
 /**
 * Insert a key in the priority queue.
 *
@@ -60,6 +61,8 @@ export class PQueue {
 * @param {number} key
 */
   insertK(key: number): void;
+
+
 /**
 * Insert a key in the priority queue. `insertKV` stands for `insert key and value`.
 *
@@ -68,6 +71,8 @@ export class PQueue {
 * @param {any} value
 */
   insertKV(key: number, value: any): void;
+
+
 /**
 * Pop from the queue the pair key/value with higher priority.
 *
@@ -77,11 +82,37 @@ export class PQueue {
 * @returns {Array<any>}
 */
   popKV(): Array<any>;
+
+
 /**
 * Pop from the queue the key with higher priority.
 * @returns {number}
 */
   popK(): number;
+
+
+/**
+* Return the key with higher priority without remove it
+* @returns {number}
+*/
+  topK(): number;
+
+
+/**
+* Return the pair key/value with higher priority without remove it
+*
+* Returns a array which the first element is the key.
+* The returned array have the length 2 if the key has inserted with associated data.
+* If the key has inserted without any associated data, it returns a array with a single element.
+* @returns {Array<any>}
+*/
+  topKV(): Array<any>;
+
+
+/**
+* The number of keys in the queue.
+*/
+  readonly length: number;
 }
 ```
 
