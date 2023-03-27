@@ -26,6 +26,10 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
         queue
     }
 
+    pub fn len(&self) -> usize {
+        self.vec.len()
+    }
+
     pub fn insert_k(&mut self, key: K) {
         self.insert(key, None)
     }
@@ -78,11 +82,20 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
         }
     }
 
-    pub fn top(&self) -> Option<Rc<V>> {
+    pub fn top_kv(&self) -> Option<(K, Option<Rc<V>>)> {
         if self.vec.len() == 0 {
             None
         } else {
-            self.vec[0].value.clone()
+            let item = self.vec[0].clone();
+            Some((item.key, item.value))
+        }
+    }
+
+    pub fn top_k(&self) -> Option<K> {
+        if self.vec.len() == 0 {
+            None
+        } else {
+            Some(self.vec[0].key)
         }
     }
 
@@ -172,6 +185,14 @@ mod tests {
     use super::*;
 
     #[test]
+    fn length_of_the_queue() {
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
+        assert_eq!(queue.len(), 0);
+        queue.insert_k(0);
+        assert_eq!(queue.len(), 1);
+    }
+
+    #[test]
     fn insert_key() {
         let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
         queue.insert_k(0);
@@ -218,12 +239,26 @@ mod tests {
     }
 
     #[test]
+    fn top_key() {
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
+        assert_eq!(queue.top_k(), None);
+        queue.insert_kv(0, String::from("Value on key 0"));
+        assert_eq!(queue.top_k(), Some(0));
+        assert_eq!(queue.top_k(), Some(0));
+    }
+
+    #[test]
     fn top_and_pop_key_value() {
         let mut queue: PQueue<u8, String> = PQueue::new(Priority::Asc);
         queue.insert_kv(0, String::from("Value on key 0"));
-        assert_eq!(queue.top().map(|rc| Rc::strong_count(&rc)), Some(2));
-        assert_eq!(queue.top().map(|rc| (*rc).clone()), Some(String::from("Value on key 0")));
+        match queue.top_kv() {
+            Some((0, Some(rc))) => {
+                assert_eq!(Rc::strong_count(&rc), 2);
+                assert_eq!((*rc).clone(), String::from("Value on key 0"));
+            },
+            _ => assert!(false),
+        };
         queue.pop_kv();
-        assert_eq!(queue.top(), None);
+        assert_eq!(queue.top_kv(), None);
     }
 }
