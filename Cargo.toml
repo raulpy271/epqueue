@@ -6,6 +6,7 @@ repository = "https://github.com/raulpy271/epqueue"
 license = "MIT"
 version = "0.9.0"
 edition = "2021"
+keywords = ["algorithm", "data structure", "priority queue", "webassembly", "rust"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
