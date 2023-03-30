@@ -7,9 +7,9 @@ test("Should instantiate queue", () => {
 })
 
 test("Should fail on instantiate with wrong parameter", () => {
-    expect(() => { new PQueue("xxx")}).toThrow();
-    expect(() => { new PQueue()}).toThrow();
-    expect(() => { new PQueue(12)}).toThrow();
+    expect(() => { new PQueue("xxx")}).toThrow(TypeError);
+    expect(() => { new PQueue()}).toThrow(Error);
+    expect(() => { new PQueue(12)}).toThrow(Error);
 })
 
 test("Should insert key and insert value", () => {
@@ -75,20 +75,20 @@ test("Should raise exception on calling top in empty queue", () => {
     expect(() => {
         let queue = new PQueue("asc");
         queue.topK();
-    }).toThrow();
+    }).toThrow(Error);
     expect(() => {
         let queue = new PQueue("asc");
         queue.topKV();
-    }).toThrow();
+    }).toThrow(Error);
 })
 
 test("Should raise exception on popping from empty queue", () => {
     expect(() => {
         let queue = new PQueue("asc");
         queue.popK();
-    }).toThrow();
+    }).toThrow(Error);
     expect(() => {
         let queue = new PQueue("asc");
         queue.popKV();
-    }).toThrow();
+    }).toThrow(Error);
 })

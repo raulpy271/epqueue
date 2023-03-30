@@ -3,7 +3,7 @@ use std::rc::Rc;
 use std::cmp;
 use std::fmt;
 
-use js_sys::{Array, TypeError};
+use js_sys::{Array, Error, TypeError};
 use wasm_bindgen::prelude::*;
 
 use crate::pqueue::{PQueue, Priority};
@@ -62,14 +62,14 @@ impl PQueueJs {
     /// If the `order` is "asc" then it's a ascending priority queue.
     /// If the `order` is "desc" then it's a descending priority queue.
     /// Otherwise, it throws a exception.
-    pub fn new(order: String) -> Result<PQueueJs, String> {
+    pub fn new(order: String) -> Result<PQueueJs, TypeError> {
         let queue;
         if order == String::from("asc") {
             queue = PQueue::new(Priority::Asc);
         } else if order == String::from("desc") {
             queue = PQueue::new(Priority::Desc);
         } else {
-            return Err(String::from("The order parameter should be asc or desc"));
+            return Err(TypeError::new("The order parameter should be asc or desc"));
         }
         let queue_js = PQueueJs{ queue };
         Ok(queue_js)
@@ -116,32 +116,32 @@ impl PQueueJs {
 
     /// The returned array have the length 2 if the key has inserted with associated data.
     /// If the key has inserted without any associated data, it returns a array with a single element.
-    pub fn pop_kv(&mut self) -> Result<Array, String> {
+    pub fn pop_kv(&mut self) -> Result<Array, Error> {
         let value = self.queue.pop_kv();
         value
             .map(|pair| match pair.1 {
                 Some(value) => Array::of2(&JsValue::from_f64(pair.0.0), &value),
                 None => Array::of1(&JsValue::from_f64(pair.0.0)),
             })
-            .ok_or(String::from("Cannot pop from empty queue"))
+            .ok_or(Error::new("Cannot pop from empty queue"))
     }
 
     #[wasm_bindgen( js_name = popK )]
     /// Pop from the queue the key with higher priority.
-    pub fn pop_k(&mut self) -> Result<f64, String> {
+    pub fn pop_k(&mut self) -> Result<f64, Error> {
         let value = self.queue.pop_k();
         value
             .map(|k| k.0)
-            .ok_or(String::from("Cannot pop from empty queue"))
+            .ok_or(Error::new("Cannot pop from empty queue"))
     }
 
     #[wasm_bindgen( js_name = topK )]
     /// Return the key with higher priority without remove it
-    pub fn top_k(&mut self) -> Result<f64, String> {
+    pub fn top_k(&mut self) -> Result<f64, Error> {
         let value = self.queue.top_k();
         value
             .map(|k| k.0)
-            .ok_or(String::from("Cannot pop from empty queue"))
+            .ok_or(Error::new("Cannot call top from empty queue"))
     }
 
     #[wasm_bindgen( js_name = topKV )]
@@ -150,14 +150,14 @@ impl PQueueJs {
     /// Returns a array which the first element is the key.
     /// The returned array have the length 2 if the key has inserted with associated data.
     /// If the key has inserted without any associated data, it returns a array with a single element.
-    pub fn top_kv(&mut self) -> Result<Array, String> {
+    pub fn top_kv(&mut self) -> Result<Array, Error> {
         let value = self.queue.top_kv();
         value
             .map(|pair| match pair.1 {
                 Some(rc) => Array::of2(&JsValue::from_f64(pair.0.0), &rc),
                 None => Array::of1(&JsValue::from_f64(pair.0.0)),
             })
-            .ok_or(String::from("Cannot pop from empty queue"))
+            .ok_or(Error::new("Cannot call top from empty queue"))
     }
 }
 
