@@ -36,6 +36,14 @@ test("Should insert and pop key", () => {
     expect(queue.popK()).toBe(1);
 })
 
+test("Should not allow non-numeric in insertK", () => {
+    let queue = new PQueue("asc");
+    expect(() => {
+        queue.insertK();
+    }).toThrow(TypeError)
+    expect(queue.length).toBe(0);
+})
+
 test("Should insert and pop key and value", () => {
     let data = {"a": 1, "b": 2, "c": 3};
     let queue = new PQueue("asc");

@@ -3,7 +3,7 @@ use std::rc::Rc;
 use std::cmp;
 use std::fmt;
 
-use js_sys::{Array};
+use js_sys::{Array, TypeError};
 use wasm_bindgen::prelude::*;
 
 use crate::pqueue::{PQueue, Priority};
@@ -85,8 +85,16 @@ impl PQueueJs {
     /// Insert a key in the priority queue.
     ///
     /// The method assumes that there is no data associated with the inserted key.
-    pub fn insert_k(&mut self, key: f64) {
-        self.queue.insert_k(NumberJs::new(key));
+    pub fn insert_k(&mut self, key_op: Option<f64>) -> Result<(), TypeError> {
+        match key_op {
+            Some(key) => {
+                self.queue.insert_k(NumberJs::new(key));
+                Ok(())
+            }
+            None =>  {
+                Err(TypeError::new("insertK expect a number"))
+            }
+        }
     }
 
     #[wasm_bindgen( js_name = insertKV )]
