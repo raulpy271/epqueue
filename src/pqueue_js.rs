@@ -91,9 +91,7 @@ impl PQueueJs {
                 self.queue.insert_k(NumberJs::new(key));
                 Ok(())
             }
-            None =>  {
-                Err(TypeError::new("insertK expect a number"))
-            }
+            None => Err(TypeError::new("insertK expect a number")),
         }
     }
 
@@ -101,8 +99,14 @@ impl PQueueJs {
     /// Insert a key in the priority queue. `insertKV` stands for `insert key and value`.
     ///
     /// The `value` should be any data associated with the inserted key.
-    pub fn insert_kv(&mut self, key: f64, value: JsValue) {
-        self.queue.insert_kv(NumberJs::new(key), value);
+    pub fn insert_kv(&mut self, key_op: Option<f64>, value: JsValue) -> Result<(), TypeError> {
+        match key_op {
+            Some(key) => {
+                self.queue.insert_kv(NumberJs::new(key), value);
+                Ok(())
+            }
+            None => Err(TypeError::new("insertK expect a number")),
+        }
     }
 
     #[wasm_bindgen( js_name = popKV )]

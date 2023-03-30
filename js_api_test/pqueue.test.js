@@ -51,6 +51,14 @@ test("Should insert and pop key and value", () => {
     expect(queue.popKV()).toEqual([1, data]);
 })
 
+test("Should not allow non-numeric in insertKV", () => {
+    let queue = new PQueue("asc");
+    expect(() => {
+        queue.insertKV();
+    }).toThrow(TypeError)
+    expect(queue.length).toBe(0);
+})
+
 test("Should return the top of the queue without remove it", () => {
     let data = {"a": 1, "b": 2, "c": 3};
     let queue = new PQueue("asc");
