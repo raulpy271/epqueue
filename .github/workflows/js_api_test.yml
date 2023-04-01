@@ -1,4 +1,4 @@
-name: Test exposed Javascript API
+name: Test exposed JS API
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  tests:
 
     runs-on: ubuntu-latest
 
@@ -17,7 +17,7 @@ jobs:
       uses: jetli/wasm-pack-action@v0.4.0
     - name: Use Node.js
       uses: actions/setup-node@v3
-    - name: Install NodeJs dependencies
+    - name: Install Node.js dependencies
       run: npm install --ignore-scripts
     - name: wasm-pack build and test
       run: npm run test

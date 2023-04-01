@@ -2,10 +2,9 @@
 # :spider_web: Efficient Priority Queue compiled to WebAssembly
 
 [![Rust - Tests](https://github.com/raulpy271/epqueue/actions/workflows/rust.yml/badge.svg)](https://github.com/raulpy271/epqueue/actions/workflows/rust.yml)
+[![Test exposed JS API](https://github.com/raulpy271/epqueue/actions/workflows/js_api_test.yml/badge.svg)](https://github.com/raulpy271/epqueue/actions/workflows/js_api_test.yml)
 [![Downloads](https://img.shields.io/npm/dt/epqueue.svg)](https://npmjs.com/package/epqueue)
-[![last commit](https://img.shields.io/github/last-commit/raulpy271/epqueue.svg)](https://github.com/raulpy271/epqueue)
 [![Github stars](https://img.shields.io/github/stars/raulpy271/epqueue.svg)](https://github.com/raulpy271/epqueue)
-[![Known Vulnerabilities](https://snyk.io/test/npm/epqueue/badge.svg)](https://snyk.io/test/npm/epqueue)
 [![npm version](https://img.shields.io/npm/v/epqueue.svg)](https://npmjs.com/package/epqueue)
 [![license MIT](https://img.shields.io/npm/l/epqueue.svg)](https://github.com/raulpy271/epqueue/blob/main/LICENSE)
 
