@@ -1,0 +1,23 @@
+name: Test exposed Javascript API
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use wasm-pack
+      uses: jetli/wasm-pack-action@v0.4.0
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+    - name: Install NodeJs dependencies
+      run: npm install
+    - name: wasm-pack build and test
+      run: npm run test
