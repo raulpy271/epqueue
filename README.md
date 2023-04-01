@@ -1,6 +1,7 @@
 
 # :spider_web: Efficient Priority Queue compiled to WebAssembly
 
+[![Rust - Tests](https://github.com/raulpy271/epqueue/actions/workflows/rust.yml/badge.svg)](https://github.com/raulpy271/epqueue/actions/workflows/rust.yml)
 [![Downloads](https://img.shields.io/npm/dt/epqueue.svg)](https://npmjs.com/package/epqueue)
 [![last commit](https://img.shields.io/github/last-commit/raulpy271/epqueue.svg)](https://github.com/raulpy271/epqueue)
 [![Github stars](https://img.shields.io/github/stars/raulpy271/epqueue.svg)](https://github.com/raulpy271/epqueue)
