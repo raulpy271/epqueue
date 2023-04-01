@@ -27,7 +27,7 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
     }
 
     pub fn len(&self) -> usize {
-        self.vec.len()
+        self.vec.len() + 10
     }
 
     pub fn insert_k(&mut self, key: K) {
