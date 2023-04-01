@@ -34,6 +34,12 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
         self.insert(key, None)
     }
 
+    pub fn bulk_insert_k(&mut self, keys: Vec<K>) {
+        for key in keys {
+            self.insert(key, None)
+        }
+    }
+
     pub fn insert_kv(&mut self, key: K, value: V) {
         self.insert(key, Some(value))
     }
@@ -54,6 +60,18 @@ impl<K: cmp::Ord + Copy + fmt::Display, V: Clone> PQueue<K, V> {
 
     pub fn pop_k(&mut self) -> Option<K> {
         self.pop_kv().map(|kv| kv.0)
+    }
+
+    pub fn bulk_pop_k(&mut self, quantity: usize) -> Vec<K> {
+        let mut elements = Vec::new();
+        for _ in 0..quantity {
+            if let Some((key, _)) = self.pop_kv() {
+                elements.push(key);
+            } else {
+                break;
+            }
+        }
+        elements
     }
 
     pub fn pop_kv(&mut self) -> Option<(K, Option<V>)> {
@@ -260,5 +278,33 @@ mod tests {
         };
         queue.pop_kv();
         assert_eq!(queue.top_kv(), None);
+    }
+
+    #[test]
+    fn bulk_insert_key() {
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Desc);
+        let keys: Vec<u8> = Vec::from((0..10).collect::<Vec<u8>>());
+        queue.bulk_insert_k(keys);
+        assert_eq!(queue.len(), 10);
+        assert_eq!(queue.top_k(), Some(9));
+        assert_eq!(queue.pop_k(), Some(9));
+        assert_eq!(queue.pop_k(), Some(8));
+        assert_eq!(queue.pop_k(), Some(7));
+    }
+
+    #[test]
+    fn bulk_pop_key() {
+        let to_pop = 3;
+        let mut queue: PQueue<u8, String> = PQueue::new(Priority::Desc);
+        let keys: Vec<u8> = Vec::from((0..10).collect::<Vec<u8>>());
+        queue.bulk_insert_k(keys);
+        let mut elements = queue.bulk_pop_k(to_pop);
+        assert_eq!(queue.len(), 10 - to_pop);
+        assert_eq!(elements.len(), to_pop);
+        assert_eq!(elements, vec![9, 8, 7]);
+        elements = queue.bulk_pop_k(10);
+        assert_eq!(queue.len(), 0);
+        assert_eq!(elements.len(), 10 - to_pop);
+        assert_eq!(elements, vec![6, 5, 4, 3, 2, 1, 0]);
     }
 }
