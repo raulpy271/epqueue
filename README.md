@@ -3,12 +3,10 @@
 
 [![Downloads](https://img.shields.io/npm/dt/epqueue.svg)](https://npmjs.com/package/epqueue)
 [![last commit](https://img.shields.io/github/last-commit/raulpy271/epqueue.svg)](https://github.com/raulpy271/epqueue)
-[![Github](https://img.shields.io/github/stars/raulpy271/epqueue.svg)](https://github.com/raulpy271/epqueue)
-[![epqueue](https://snyk.io/advisor/npm-package/epqueue/badge.svg)](https://snyk.io/advisor/npm-package/epqueue)
+[![Github stars](https://img.shields.io/github/stars/raulpy271/epqueue.svg)](https://github.com/raulpy271/epqueue)
 [![Known Vulnerabilities](https://snyk.io/test/npm/epqueue/badge.svg)](https://snyk.io/test/npm/epqueue)
-[![npm](https://img.shields.io/npm/v/epqueue.svg)](https://npmjs.com/package/epqueue)
+[![npm version](https://img.shields.io/npm/v/epqueue.svg)](https://npmjs.com/package/epqueue)
 [![license MIT](https://img.shields.io/npm/l/epqueue.svg)](https://github.com/raulpy271/epqueue/blob/main/LICENSE)
-[![Size](https://img.shields.io/bundlephobia/minzip/epqueue)](https://bundlephobia.com/package/epqueue)
 
 A priority queue library compiled to WebAssembly to be imported in any JavaScript/TypeScript environment with support to Wasm.
 
