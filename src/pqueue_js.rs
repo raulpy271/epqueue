@@ -109,6 +109,23 @@ impl PQueueJs {
         }
     }
 
+    #[wasm_bindgen( js_name = bulkInsertK )]
+    /// Insert a array of keys in the priority queue. This method is roughly equivalent for calling `insert_k` for each element of the array `keys`, but it's more faster. 
+    ///
+    /// This method is more faster than calling `insert_k` for each key, because using this method just only one call to webassembly happens.
+    pub fn bulk_insert_k(&mut self, keys: Vec<JsValue>) -> Result<(), TypeError> {
+        let mut vec = Vec::new();
+        for key_js in keys {
+            if let Some(key) = key_js.as_f64() {
+                vec.push(NumberJs::new(key));
+            } else {
+                return Err(TypeError::new("The elements of the array should be numbers"));
+            }
+        }
+        self.queue.bulk_insert_k(vec);
+        Ok(())
+    }
+
     #[wasm_bindgen( js_name = popKV )]
     /// Pop from the queue the pair key/value with higher priority.
     ///
@@ -133,6 +150,29 @@ impl PQueueJs {
         value
             .map(|k| k.0)
             .ok_or(Error::new("Cannot pop from empty queue"))
+    }
+
+    #[wasm_bindgen( js_name = bulkPopK )]
+    /// Return a array with the keys with highest priority. The returned keys are removed from the Queue.
+    /// 
+    /// The `quantity_op` is the number of elements to be returned.
+    /// This methods is more faster than calling `pop_k` repeatedly for popping a sequence of keys.
+    pub fn bulk_pop_k(&mut self, quantity_op: Option<i32>) -> Result<Vec<f64>, TypeError> {
+        let err = Err(TypeError::new("The bulk pop parameter should be a positive number"));
+        if let Some(quantity) = quantity_op {
+            if quantity > 0 {
+                let vec = self.queue.bulk_pop_k(quantity as usize);
+                let vec_f64 = vec
+                    .iter()
+                    .map(|k| k.0)
+                    .collect::<Vec<f64>>();
+                Ok(vec_f64)
+            } else {
+                err
+            }
+        }  else {
+            err
+        }
     }
 
     #[wasm_bindgen( js_name = topK )]

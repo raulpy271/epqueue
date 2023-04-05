@@ -51,6 +51,25 @@ test("Should insert and pop key and value", () => {
     expect(queue.popKV()).toEqual([1, data]);
 })
 
+test("Should do bulk insert keys", () => {
+    let queue = new PQueue("asc");
+    queue.bulkInsertK([2, 1, 3]);
+    expect(queue.length).toBe(3);
+    queue.bulkInsertK([]);
+    expect(queue.length).toBe(3);
+})
+
+test("Should do bulk insert keys and bulk pop keys", () => {
+    let queue = new PQueue("asc");
+    queue.bulkInsertK([2, 1, 3]);
+    expect(queue.length).toBe(3);
+    let result = queue.bulkPopK(3);
+    expect(result).toEqual(new Float64Array([1, 2, 3]));
+    expect(queue.length).toBe(0);
+    result = queue.bulkPopK(3);
+    expect(result).toEqual(new Float64Array([]));
+})
+
 test("Should not allow non-numeric in insertKV", () => {
     let queue = new PQueue("asc");
     expect(() => {
@@ -91,4 +110,35 @@ test("Should raise exception on popping from empty queue", () => {
         let queue = new PQueue("asc");
         queue.popKV();
     }).toThrow(Error);
+})
+
+test("should not allow non-numeric in bulkInsertK", () => {
+    let queue = new PQueue("asc");
+    expect(() => {
+        queue.bulkInsertK([0, 1, undefined]);
+    }).toThrow(TypeError)
+    expect(queue.length).toBe(0);
+    expect(() => {
+        queue.bulkInsertK('hello');
+    }).toThrow(TypeError)
+    expect(queue.length).toBe(0);
+    expect(() => {
+        queue.bulkInsertK();
+    }).toThrow(TypeError)
+    expect(queue.length).toBe(0);
+})
+
+test("should not allow non-numeric in bulkPopK", () => {
+    let queue = new PQueue("asc");
+    queue.bulkInsertK([2, 1, 3]);
+    expect(() => {
+        queue.bulkPopK();
+    }).toThrow(TypeError)
+    expect(() => {
+        queue.bulkPopK(true);
+    }).toThrow(Error)
+    expect(() => {
+        queue.bulkPopK(-3);
+    }).toThrow(TypeError)
+    expect(queue.length).toBe(3);
 })

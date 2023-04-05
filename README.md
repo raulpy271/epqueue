@@ -117,6 +117,26 @@ export class PQueue {
 
 
 /**
+* Insert a array of keys in the priority queue. This method is roughly equivalent for calling `insert_k` for each element of the array `keys`, but it's more faster. 
+*
+* This method is more faster than calling `insert_k` for each key, because using this method just only one call to webassembly happens.
+* @param {Array<number>} keys
+*/
+  bulkInsertK(keys: Array<number>): void;
+
+
+/**
+* Return a array with the keys with highest priority. The returned keys are removed from the Queue.
+* 
+* The `quantity` is the number of elements to be returned.
+* This methods is more faster than calling `pop_k` repeatedly for popping a sequence of keys.
+* @param {number} quantity
+* @returns {Float64Array}
+*/
+  bulkPopK(quantity: number): Float64Array;
+
+
+/**
 * The number of keys in the queue.
 */
   readonly length: number;
