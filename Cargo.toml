@@ -4,7 +4,7 @@ description = "Efficient priority queue written in Rust and compiled to WebAssem
 authors = ["raulpy271 <raulrufino0@gmail.com>"]
 repository = "https://github.com/raulpy271/epqueue"
 license = "MIT"
-version = "0.9.1"
+version = "0.10.0"
 edition = "2021"
 keywords = ["algorithm", "data structure", "priority queue", "webassembly", "rust", "backend"]
 
