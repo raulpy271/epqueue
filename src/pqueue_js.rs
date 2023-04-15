@@ -126,6 +126,23 @@ impl PQueueJs {
         Ok(())
     }
 
+    #[wasm_bindgen( js_name = bulkInsertKV )]
+    pub fn bulk_insert_kv(&mut self, keys: Vec<JsValue>, values: Vec<JsValue>) -> Result<(), TypeError> {
+        if keys.len() != values.len() {
+            return Err(TypeError::new("The arrays should have the same length"));
+        }
+        let mut vec = Vec::new();
+        for i in 0..keys.len() {
+            if let Some(key) = keys[i].as_f64() {
+                vec.push((NumberJs::new(key), values[i].clone()));
+            } else {
+                return Err(TypeError::new("The elements of the array should be numbers"));
+            }
+        }
+        self.queue.bulk_insert_kv(vec);
+        Ok(())
+    }
+
     #[wasm_bindgen( js_name = popKV )]
     /// Pop from the queue the pair key/value with higher priority.
     ///

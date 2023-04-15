@@ -70,10 +70,29 @@ test("Should do bulk insert keys and bulk pop keys", () => {
     expect(result).toEqual(new Float64Array([]));
 })
 
+test("Should do bulk insert with keys and values", () => {
+    let data1 = {"a": 1, "b": 2, "c": 3};
+    let data2 = {"x": 1, "y": 2, "z": 3};
+    let queue = new PQueue("asc");
+    queue.bulkInsertKV([2, 1], [data1, data2]);
+    expect(queue.length).toBe(2);
+    expect(queue.popKV()).toEqual([1, data2]);
+    expect(queue.popKV()).toEqual([2, data1]);
+    expect(queue.length).toBe(0);
+})
+
 test("Should not allow non-numeric in insertKV", () => {
     let queue = new PQueue("asc");
     expect(() => {
         queue.insertKV();
+    }).toThrow(TypeError)
+    expect(queue.length).toBe(0);
+})
+
+test("Should not allow array with diferent sizes in bulkInsertKV", () => {
+    let queue = new PQueue("asc");
+    expect(() => {
+        queue.bulkInsertKV([1, 2, 3], [1, 3, 4, 5]);
     }).toThrow(TypeError)
     expect(queue.length).toBe(0);
 })
