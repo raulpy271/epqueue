@@ -124,6 +124,15 @@ export class PQueue {
 */
   bulkInsertK(keys: Array<number>): void;
 
+/**
+* Insert an array of keys in the priority queue with associated values. The value `values[0]` is associated with the key `keys[0]`, and so on.
+* This method is roughly equivalent for calling `insertKV` for each element of the two array `keys` and `values`, but it's more faster. 
+*
+* Both array must have the same length, otherwise, an error is thrown.
+* @param {Array<number>} keys
+* @param {Array<any>} values
+*/
+  bulkInsertKV(keys: Array<number>, values: Array<any>): void;
 
 /**
 * Return a array with the keys with highest priority. The returned keys are removed from the Queue.
@@ -135,6 +144,15 @@ export class PQueue {
 */
   bulkPopK(quantity: number): Float64Array;
 
+/**
+* Return a array with the the pairs key/value with highest priority. The returned pairs are removed from the Queue.
+* 
+* Each element of the returned array is like the returned element of `popKV`, so it's a array with two or one element.
+* This methods is more faster than calling `popKV` repeatedly for popping a sequence of key/value.
+* @param {number} quantity
+* @returns {(Array<any>)[]}
+*/
+  bulkPopKV(quantity: number): (Array<any>)[];
 
 /**
 * The number of keys in the queue.
