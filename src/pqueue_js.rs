@@ -127,6 +127,10 @@ impl PQueueJs {
     }
 
     #[wasm_bindgen( js_name = bulkInsertKV )]
+    /// Insert a array of keys in the priority queue with associated values. The value `values[0]` is associated with the key `keys[0]`, and so on.
+    /// This method is roughly equivalent for calling `insert_kv` for each element of the two array `keys` and `values`, but it's more faster. 
+    ///
+    /// Both array must have the same length, otherwise, an error is thrown.
     pub fn bulk_insert_kv(&mut self, keys: Vec<JsValue>, values: Vec<JsValue>) -> Result<(), TypeError> {
         if keys.len() != values.len() {
             return Err(TypeError::new("The arrays should have the same length"));
@@ -193,6 +197,10 @@ impl PQueueJs {
     }
 
     #[wasm_bindgen( js_name = bulkPopKV )]
+    /// Return an array with the the pairs key/value with highest priority. The returned pairs are removed from the Queue.
+    /// 
+    /// Each element of the returned array is like the returned element of `pop_kv`, so it's a array with two or one element.
+    /// This methods is more faster than calling `pop_kv` repeatedly for popping a sequence of key/value.
     pub fn bulk_pop_kv(&mut self, quantity_op: Option<i32>) -> Result<Vec<Array>, TypeError> {
         let err = Err(TypeError::new("The bulk pop parameter should be a positive number"));
         if let Some(quantity) = quantity_op {
