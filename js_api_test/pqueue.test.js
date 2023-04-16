@@ -89,6 +89,19 @@ test("Should not allow non-numeric in insertKV", () => {
     expect(queue.length).toBe(0);
 })
 
+test("Should do bulk pop with keys and values", () => {
+    let data1 = {"a": 1, "b": 2, "c": 3};
+    let data2 = {"x": 1, "y": 2, "z": 3};
+    let queue = new PQueue("asc");
+    queue.bulkInsertKV([2, 1, 0, 3], [data1, data2, data1, data2]);
+    queue.insertK(7);
+    expect(queue.length).toBe(5);
+    expect(queue.bulkPopKV(2)).toEqual([[0, data1], [1, data2]]);
+    expect(queue.length).toBe(3);
+    expect(queue.bulkPopKV(4)).toEqual([[2, data1], [3, data2], [7]]);
+    expect(queue.length).toBe(0);
+})
+
 test("Should not allow array with diferent sizes in bulkInsertKV", () => {
     let queue = new PQueue("asc");
     expect(() => {

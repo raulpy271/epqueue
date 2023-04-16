@@ -192,6 +192,30 @@ impl PQueueJs {
         }
     }
 
+    #[wasm_bindgen( js_name = bulkPopKV )]
+    pub fn bulk_pop_kv(&mut self, quantity_op: Option<i32>) -> Result<Vec<Array>, TypeError> {
+        let err = Err(TypeError::new("The bulk pop parameter should be a positive number"));
+        if let Some(quantity) = quantity_op {
+            if quantity > 0 {
+                let vec = self.queue.bulk_pop_kv(quantity as usize);
+                let vec_pair = vec
+                    .iter()
+                    .map(|(k, value_op)| 
+                        match value_op {
+                            Some(value) => Array::of2(&JsValue::from_f64(k.0), &value),
+                            None => Array::of1(&JsValue::from_f64(k.0)),
+                        }
+                    )
+                    .collect::<Vec<Array>>();
+                Ok(vec_pair)
+            } else {
+                err
+            }
+        }  else {
+            err
+        }
+    }
+
     #[wasm_bindgen( js_name = topK )]
     /// Return the key with higher priority without remove it
     pub fn top_k(&mut self) -> Result<f64, Error> {
